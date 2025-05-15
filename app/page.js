@@ -145,7 +145,7 @@ export default function AskPage() {
       </header>
 
       {/* Main */}
-      <main className="flex-grow w-[60%] max-w-3xl mx-auto p-6">
+      <main className="flex-grow w-[90%] max-w-3xl mx-auto p-6">
         <motion.div
           className="space-y-6"
           initial={{ opacity: 0, y: -20 }}
