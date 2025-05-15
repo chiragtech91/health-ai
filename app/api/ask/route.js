@@ -1,55 +1,32 @@
+import { NextResponse } from 'next/server';
+import axios from 'axios';
+
 export async function POST(req) {
   try {
-    const body = await req.json();
-    const { name, age, gender, pincode, message } = body;
+    const { name, age, gender, pincode, symptoms, duration } = await req.json();
 
-    const prompt = `
-User Details:
-- Name: ${name}
-- Age: ${age}
-- Gender: ${gender}
-- Pincode: ${pincode}
+    const prompt = `A patient named ${name}, aged ${age}, gender: ${gender}, from pincode ${pincode}, reports: ${symptoms}. Issue duration: ${duration}. Suggest possible conditions, treatments, and nearby hospitals with approximate costs.`;
 
-Symptoms:
-${message}
-
-Based on the above, provide:
-1. Possible diagnosis or health suggestion
-2. Suggested treatments
-3. A list of 3 nearby hospitals/nursing homes (based on pincode) with estimated treatment cost in INR
-4. Reliability percentage (just a rough estimate)
-`;
-
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        "Content-Type": "application/json",
-        "X-Title": "AI Health Assistant"
+    const response = await axios.post(
+      'https://api.together.xyz/v1/chat/completions',
+      {
+        model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.7,
+        max_tokens: 1024,
       },
-      body: JSON.stringify({
-        model: "openrouter/auto", // more flexible
-        messages: [
-          {
-            role: "system",
-            content: "You are a helpful health assistant. Provide guidance based on symptoms and user info."
-          },
-          {
-            role: "user",
-            content: prompt
-          }
-        ]
-      }),
-    });
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.TOGETHER_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
 
-    const data = await response.json();
-    console.log("OpenRouter API response:", JSON.stringify(data, null, 2));
-
-    const aiReply = data?.choices?.[0]?.message?.content || "Sorry, I couldn’t process your request at this time.";
-
-    return Response.json({ reply: aiReply });
+    const aiReply = response.data.choices[0].message.content;
+    return NextResponse.json({ reply: aiReply });
   } catch (error) {
-    console.error("Error in AI request:", error);
-    return Response.json({ reply: "Something went wrong on the server." });
+    console.error('Error:', error?.response?.data || error.message);
+    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });
   }
 }
