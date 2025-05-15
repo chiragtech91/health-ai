@@ -25,12 +25,12 @@ const InputWrapper = ({ icon, children }) => (
 
 export default function AskPage() {
   const [form, setForm] = useState({
-    name: '',
-    age: '',
-    gender: '',
-    pincode: '',
-    issue: '',
-    duration: '',
+    name: 'Chirag',
+    age: '34',
+    gender: 'male',
+    pincode: '110039',
+    issue: 'lower back pain and fever',
+    duration: '1-2 weeks',
   });
   const [errors, setErrors] = useState({});
   const [response, setResponse] = useState('');
@@ -66,7 +66,19 @@ export default function AskPage() {
   const handleChange = useCallback((e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-    setErrors((prev) => ({ ...prev, [name]: undefined }));
+
+    // Live validation
+    setErrors((prevErrors) => {
+      const updatedErrors = { ...prevErrors };
+      if (name === 'name' && value.trim()) delete updatedErrors.name;
+      if (name === 'age' && value && !isNaN(value) && value >= 1 && value <= 120)
+        delete updatedErrors.age;
+      if (name === 'gender' && value) delete updatedErrors.gender;
+      if (name === 'pincode' && /^\d{6}$/.test(value)) delete updatedErrors.pincode;
+      if (name === 'issue' && value.trim()) delete updatedErrors.issue;
+      if (name === 'duration' && value) delete updatedErrors.duration;
+      return updatedErrors;
+    });
   }, []);
 
   const handleSubmit = async () => {
@@ -213,7 +225,7 @@ export default function AskPage() {
               )}
             </div>
 
-            {/* Duration (full width) */}
+            {/* Duration */}
             <div className="md:col-span-2">
               <InputWrapper icon={<FaClock />}>
                 <select
@@ -225,7 +237,7 @@ export default function AskPage() {
                   } bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none`}
                 >
                   <option value="">Since when?</option>
-                  <option value="<1 day">‹1 day</option>
+                  <option value="<1 day">&lt;1 day</option>
                   <option value="1-3 days">1–3 days</option>
                   <option value="1 week">1 week</option>
                   <option value="1-2 weeks">1–2 weeks</option>
@@ -237,7 +249,7 @@ export default function AskPage() {
               )}
             </div>
 
-            {/* Issue (full width) */}
+            {/* Issue */}
             <div className="md:col-span-2">
               <InputWrapper icon={<FaStethoscope />}>
                 <textarea
