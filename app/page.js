@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState, useCallback, useEffect } from 'react';
-import axios from 'axios';
-import { motion } from 'framer-motion';
+import { useState, useCallback, useEffect } from "react";
+import axios from "axios";
+import { motion } from "framer-motion";
 import {
   FaUser,
   FaHashtag,
@@ -12,7 +12,8 @@ import {
   FaClock,
   FaSun,
   FaMoon,
-} from 'react-icons/fa';
+} from "react-icons/fa";
+import AIResponse from "../components/AIResponse";
 
 const InputWrapper = ({ icon, children }) => (
   <div className="relative w-full">
@@ -25,40 +26,40 @@ const InputWrapper = ({ icon, children }) => (
 
 export default function AskPage() {
   const [form, setForm] = useState({
-    name: 'Chirag',
-    age: '34',
-    gender: 'male',
-    pincode: '110039',
-    issue: 'lower back pain and fever',
-    duration: '1-2 weeks',
+    name: "",
+    age: "",
+    gender: "",
+    pincode: "",
+    issue: "",
+    duration: "",
   });
   const [errors, setErrors] = useState({});
-  const [response, setResponse] = useState('');
+  const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 
   // Load/save theme
   useEffect(() => {
-    const saved = localStorage.getItem('darkMode');
-    if (saved === 'true') setDarkMode(true);
+    const saved = localStorage.getItem("darkMode");
+    if (saved === "true") setDarkMode(true);
   }, []);
   useEffect(() => {
-    localStorage.setItem('darkMode', darkMode);
+    localStorage.setItem("darkMode", darkMode);
   }, [darkMode]);
 
   const toggleDarkMode = () => setDarkMode((prev) => !prev);
 
   const validate = useCallback(() => {
     const newErrors = {};
-    if (!form.name.trim()) newErrors.name = 'Name is required';
+    if (!form.name.trim()) newErrors.name = "Name is required";
     if (!form.age || isNaN(form.age) || form.age < 1 || form.age > 120)
-      newErrors.age = 'Valid age required';
-    if (!form.gender) newErrors.gender = 'Gender is required';
+      newErrors.age = "Valid age required";
+    if (!form.gender) newErrors.gender = "Gender is required";
     if (!/^\d{6}$/.test(form.pincode))
-      newErrors.pincode = 'Valid 6-digit pincode required';
+      newErrors.pincode = "Valid 6-digit pincode required";
     if (!form.issue.trim())
-      newErrors.issue = 'Health issue description is required';
-    if (!form.duration) newErrors.duration = 'Please select duration';
+      newErrors.issue = "Health issue description is required";
+    if (!form.duration) newErrors.duration = "Please select duration";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }, [form]);
@@ -70,13 +71,20 @@ export default function AskPage() {
     // Live validation
     setErrors((prevErrors) => {
       const updatedErrors = { ...prevErrors };
-      if (name === 'name' && value.trim()) delete updatedErrors.name;
-      if (name === 'age' && value && !isNaN(value) && value >= 1 && value <= 120)
+      if (name === "name" && value.trim()) delete updatedErrors.name;
+      if (
+        name === "age" &&
+        value &&
+        !isNaN(value) &&
+        value >= 1 &&
+        value <= 120
+      )
         delete updatedErrors.age;
-      if (name === 'gender' && value) delete updatedErrors.gender;
-      if (name === 'pincode' && /^\d{6}$/.test(value)) delete updatedErrors.pincode;
-      if (name === 'issue' && value.trim()) delete updatedErrors.issue;
-      if (name === 'duration' && value) delete updatedErrors.duration;
+      if (name === "gender" && value) delete updatedErrors.gender;
+      if (name === "pincode" && /^\d{6}$/.test(value))
+        delete updatedErrors.pincode;
+      if (name === "issue" && value.trim()) delete updatedErrors.issue;
+      if (name === "duration" && value) delete updatedErrors.duration;
       return updatedErrors;
     });
   }, []);
@@ -84,12 +92,12 @@ export default function AskPage() {
   const handleSubmit = async () => {
     if (!validate()) return;
     setLoading(true);
-    setResponse('');
+    setResponse("");
     try {
-      const res = await axios.post('/api/ask', form);
+      const res = await axios.post("/api/ask", form);
       setResponse(res.data.reply);
     } catch {
-      setResponse('Something went wrong. Please try again.');
+      setResponse("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -97,23 +105,23 @@ export default function AskPage() {
 
   const handleReset = () => {
     setForm({
-      name: '',
-      age: '',
-      gender: '',
-      pincode: '',
-      issue: '',
-      duration: '',
+      name: "",
+      age: "",
+      gender: "",
+      pincode: "",
+      issue: "",
+      duration: "",
     });
     setErrors({});
-    setResponse('');
+    setResponse("");
   };
 
   return (
     <div
       className={
         darkMode
-          ? 'dark bg-gray-900 text-gray-100 min-h-screen flex flex-col'
-          : 'bg-gray-100 text-gray-900 min-h-screen flex flex-col'
+          ? "dark bg-gray-900 text-gray-100 min-h-screen flex flex-col"
+          : "bg-gray-100 text-gray-900 min-h-screen flex flex-col"
       }
     >
       {/* Header */}
@@ -157,7 +165,7 @@ export default function AskPage() {
                   value={form.name}
                   onChange={handleChange}
                   className={`pl-10 w-full p-2 rounded border ${
-                    errors.name ? 'border-red-500' : 'border-gray-300'
+                    errors.name ? "border-red-500" : "border-gray-300"
                   } bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none`}
                 />
               </InputWrapper>
@@ -176,7 +184,7 @@ export default function AskPage() {
                   value={form.age}
                   onChange={handleChange}
                   className={`pl-10 w-full p-2 rounded border ${
-                    errors.age ? 'border-red-500' : 'border-gray-300'
+                    errors.age ? "border-red-500" : "border-gray-300"
                   } bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none`}
                 />
               </InputWrapper>
@@ -193,7 +201,7 @@ export default function AskPage() {
                   value={form.gender}
                   onChange={handleChange}
                   className={`pl-10 w-full p-2 rounded border ${
-                    errors.gender ? 'border-red-500' : 'border-gray-300'
+                    errors.gender ? "border-red-500" : "border-gray-300"
                   } bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none`}
                 >
                   <option value="">Select Gender</option>
@@ -216,7 +224,7 @@ export default function AskPage() {
                   value={form.pincode}
                   onChange={handleChange}
                   className={`pl-10 w-full p-2 rounded border ${
-                    errors.pincode ? 'border-red-500' : 'border-gray-300'
+                    errors.pincode ? "border-red-500" : "border-gray-300"
                   } bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none`}
                 />
               </InputWrapper>
@@ -233,7 +241,7 @@ export default function AskPage() {
                   value={form.duration}
                   onChange={handleChange}
                   className={`pl-10 w-full p-2 rounded border ${
-                    errors.duration ? 'border-red-500' : 'border-gray-300'
+                    errors.duration ? "border-red-500" : "border-gray-300"
                   } bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none`}
                 >
                   <option value="">Since when?</option>
@@ -255,11 +263,11 @@ export default function AskPage() {
                 <textarea
                   name="issue"
                   rows={4}
-                  placeholder="Describe your health issue"
+                  placeholder="Describe your health issue in detail"
                   value={form.issue}
                   onChange={handleChange}
                   className={`pl-10 w-full p-2 rounded border ${
-                    errors.issue ? 'border-red-500' : 'border-gray-300'
+                    errors.issue ? "border-red-500" : "border-gray-300"
                   } bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none resize-none`}
                 />
               </InputWrapper>
@@ -276,7 +284,7 @@ export default function AskPage() {
               disabled={loading}
               className="flex-1 bg-blue-600 dark:bg-blue-700 text-white px-6 py-2 rounded hover:bg-blue-700 dark:hover:bg-blue-800 transition"
             >
-              {loading ? 'Submitting...' : 'Submit'}
+              {loading ? "Submitting..." : "Submit"}
             </button>
             <button
               onClick={handleReset}
@@ -290,21 +298,25 @@ export default function AskPage() {
 
         {/* Response */}
         <motion.div
-          className="mt-10 p-6 border rounded bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 whitespace-pre-wrap"
+          className="mt-10 p-6 border rounded bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h3 className="text-lg font-semibold mb-2">AI Response:</h3>
-          {loading
-            ? 'Processing your input...'
-            : response || 'Fill the form and submit to get suggestions.'}
+          <h3 className="text-lg font-semibold mb-4">AI Response:</h3>
+          {loading ? (
+            <p>Processing your input...</p>
+          ) : response ? (
+            <AIResponse text={response} />
+          ) : (
+            <p>Fill the form and submit to get suggestions.</p>
+          )}
         </motion.div>
       </main>
 
       {/* Footer */}
       <footer className="bg-blue-600 dark:bg-blue-800 text-white p-4 text-center">
-        © {new Date().getFullYear()} ChiragTech. All rights reserved.
+        © {new Date().getFullYear()} AI Health Assistant. All rights reserved.
       </footer>
     </div>
   );
